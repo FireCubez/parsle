@@ -1,0 +1,29 @@
+{
+	"name": "parsle",
+	"version": "1.1.0",
+	"description": "A parser toolkit for JavaScript",
+	"main": "src/index.js",
+	"scripts": {
+		"test": "eslint --ignore-path .gitignore ./src",
+		"compile": "echo Compiled `index.js` file: && reqpack index.js ./src | tee ./index.js",
+		"crun": "reqpack index.js ./src ./index.js && node runner.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/FireCubez/parsle.git"
+	},
+	"keywords": [
+		"parser"
+	],
+	"author": "FireCubez",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/FireCubez/parsle/issues"
+	},
+	"homepage": "https://github.com/FireCubez/parsle#readme",
+	"dependencies": {
+		"@firecubez/req": "^1.2.1",
+		"line-column": "^1.0.2",
+		"mirrorprop": "^1.0.1"
+	}
+}
