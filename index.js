@@ -9,23 +9,6 @@ const Req = require("@firecubez/req");module.exports = exports = (function(Req){
 	) .depend("mirrorprop", "forwards property get/sets"),
 	$$ => {
 
-	/*global.clogLevel = 0;
-	global.clogState = [];
-	global.clog = function(...a) {
-		console.log(...a.map(x => ["  ".repeat(global.clogLevel), x, "\n"]).reduce((acc, val) => acc.concat(val), []))
-	}
-	global.cstart = function() {
-		global.clogLevel++;
-	}
-	global.cend = function() {
-		global.clogLevel--;
-	}
-	global.csave = function() {
-		global.clogState.push(global.clogLevel)
-	}
-	global.cload = function() {
-		global.clogLevel = global.clogState.pop();
-	}*/
 	const mirrorprop = $$.get("mirrorprop", {});
 	const Matcher    = $$.get("parsle$matcher", {});
 
@@ -36,7 +19,14 @@ const Req = require("@firecubez/req");module.exports = exports = (function(Req){
 			mirrorprop(this, "pos",    $, "pos");
 			mirrorprop(this, "error",  $, "error");
 			mirrorprop(this, "result", $, "result");
-			this.intern = {matcher: $, mf: fn};
+			Object.defineProperty(this, "intern", {
+				configurable: false,
+				enumerable: false,
+				value: {
+					matcher: $,
+					mf: fn
+				}
+			});
 		}
 
 		parse(str) {
@@ -47,15 +37,6 @@ const Req = require("@firecubez/req");module.exports = exports = (function(Req){
 			return this.result;
 		}
 	}
-
-	var p = new Parsle($ => {
-		$.MATCH(/(?:Mazin)+/)
-
-		$.MATCH(/$/, $.IGNORED);
-	});
-
-	var str = "MazinMazinMazin";
-	console.log("-----------\n", JSON.stringify(p.parse(str), null, 2));
 
 	return Parsle;
 
@@ -118,11 +99,9 @@ const Req = require("@firecubez/req");module.exports = exports = (function(Req){
 	Matcher.prototype.IGNORED = Matcher.IGNORED = Symbol("parsle$Matcher.IGNORED");
 
 	Matcher.prototype.MATCH = function(regex, transform, gate) {
-		gate = gate || yes;
-		this.MATCH_AHEAD(regex, transform, info => info.match.index === 0 && gate(info));
-	}
-
-	Matcher.prototype.MATCH_AHEAD = function(regex, transform, gate) {
+		// TODO: Find a way to not repeat ourselves
+		if(regex.global)
+			throw new Error("Cannot use `g` flag in regex " + regex.toString());
 		gate      = gate      || yes;
 		transform = transform || Matcher.defaultTransform;
 		var res   = this.string.match(regex);
@@ -132,15 +111,55 @@ const Req = require("@firecubez/req");module.exports = exports = (function(Req){
 			pos: this.pos,
 			match: res
 		};
-		if(!res || (info.length = res[0].length, !gate(info))) {
+		if(!res || res.index > 0) {
 			throw new ParseError(
 				"Expected matching " + regex.toString() +
 				' but got "' + this.string.slice(0, 5) + '..."',
 				this.line, this.col)
 		} else {
-			if(transform !== Matcher.IGNORED) this.result.push(transform(info));
-			this.pos += res[0].length;
-			this.string = this.string.slice(res[0].length);
+			info.length = res[0].length
+			if(!gate(info)) {
+				throw new ParseError(
+					"Gate " + (gate.name && gate.name !== "anonymous" ? "`" + gate.name + "` " : "") +
+					'did not match for "' + this.string.slice(0, 5) + '..."',
+					this.line, this.col)
+			} else {
+				if(transform !== Matcher.IGNORED) this.result.push(transform(info));
+				this.pos += res[0].length;
+				this.string = this.string.slice(res[0].length);
+			}
+		}
+	}
+
+	Matcher.prototype.MATCH_AHEAD = function(regex, transform, gate) {
+		if(regex.global)
+			throw new Error("Cannot use `g` flag in regex " + regex.toString());
+		gate      = gate      || yes;
+		transform = transform || Matcher.defaultTransform;
+		var res   = this.string.match(regex);
+		var info  = {
+			line: this.line,
+			col: this.col,
+			pos: this.pos,
+			match: res
+		};
+		if(!res) {
+			throw new ParseError(
+				"Expected matching " + regex.toString() +
+				' but got "' + this.string.slice(0, 5) + '..."',
+				this.line, this.col)
+		} else {
+			info.length = res[0].length
+			if(!gate(info)) {
+				throw new ParseError(
+					"Gate " + (gate.name && gate.name !== "anonymous" ? "`" + gate.name + "` " : "") +
+					'did not match for "' + this.string.substr(res.index, 5) + '..."',
+					this.line, this.col)
+			} else {
+				if(transform !== Matcher.IGNORED) this.result.push(transform(info));
+				this.pos += res[0].length;
+				this.string = this.string.slice(res[0].length + res.index);
+			}
 		}
 	}
 
@@ -190,6 +209,15 @@ const Req = require("@firecubez/req");module.exports = exports = (function(Req){
 		var r = this.result;
 		this.result = old;
 		this.result.push(transform(r));
+	}
+
+	Matcher.prototype.OR = function(fnArray) {
+		fnArray.forEach(fn => {
+			if(this.OPTIONAL(fn)) return;
+		});
+		throw new ParseError(
+			'No alternatives can match "' + this.string.slice(0, 5) + '..."'
+			this.line, this.col);
 	}
 	
 	return Matcher;
