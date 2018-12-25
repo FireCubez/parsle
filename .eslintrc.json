@@ -1,0 +1,39 @@
+{
+	"parserOptions": {
+		"ecmaVersion": 9,
+		"sourceType": "module"
+	},
+	"env": {
+		"node": true
+	},
+	"globals": {
+		"Req": true
+	},
+	"extends": "eslint:recommended",
+	"rules": {
+		"no-console": "off",
+		"no-inner-declarations": ["warn", "both"],
+		"curly": "error",
+		"dot-location": ["error", "property"],
+		"eqeqeq": "error",
+		"guard-for-in": "warn",
+		"dot-notation": ["error", {"allowKeywords": false}],
+		"no-alert": "error",
+		"no-eq-null": "error",
+		"no-eval": "error",
+		"no-extra-bind": "warn",
+		"no-extra-label": "warn",
+		"no-param-reassign": "error",
+		"no-warning-comments": ["warn", {"terms": ["todo", "fixme"]}],
+		"no-useless-return": "warn",
+		"no-with": "error",
+		"require-await": "warn",
+		"wrap-iife": "error",
+		"yoda": "error",
+		"strict": ["error", "global"],
+		"no-label-var": "error",
+		"no-shadow": "warn",
+		"no-undefined": "error",
+		"no-use-before-define": "error"
+	}
+}
