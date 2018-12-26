@@ -1,6 +1,6 @@
 {
 	"name": "parsle",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "A parser toolkit for JavaScript",
 	"main": "index.js",
 	"scripts": {
