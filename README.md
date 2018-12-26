@@ -80,7 +80,7 @@ Returns whether `fn` would succeed (i.e. not throw a parse error when run). If a
 
 ### `Matcher.GROUP(fn, transform)`
 
-Runs `fn`, but instead of pushing the results to the `Matcher.result` array, it passes an array of results**\*** to the transform function and the return value of that is pushed instead.
+Runs `fn`, but instead of pushing the results to the `Matcher.result` array, it passes an array of results<b>\*</b> to the transform function and the return value of that is pushed instead.
 
 \* Those results are still obtained by using the transform function on `Matcher.MATCH` / `Matcher.MATCH_AHEAD`, so they might be info objects and might not.
 
