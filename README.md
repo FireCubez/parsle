@@ -52,7 +52,7 @@ The transform function takes an info object with keys:
 - `pos`: The 0-based index of the character the match started at.
 - `line`, `col`: The 1-based line and column of the character the match started at.
 - `match`: The result of calling `string.match(regex)` where `string` is the current string
-...and returns an object to be added to the results. Think of it as a post-proccesor function. The default behavior is to return the `match` property of the info object
+...and returns an object to be added to the results. Think of it as a post-proccesor function. The default behavior is to return the `match` property of the info object. If the transform function is the special `Matcher.IGNORED` or `Matcher.prototype.IGNORED`, or if the function *returns* either of those, then the results aren't even added to the `this.result` array
 
 The gate function takes an info object as described above, and if it returns `false`, the match is discarded and a parse error is thrown.
 
@@ -80,7 +80,9 @@ Returns whether `fn` would succeed (i.e. not throw a parse error when run). If a
 
 ### `Matcher.GROUP(fn, transform)`
 
-Runs `fn`, but instead of pushing the results to the `Matcher.result` array, it passes an array of results to the transform function and the return value of that is pushed instead.
+Runs `fn`, but instead of pushing the results to the `Matcher.result` array, it passes an array of results**\*** to the transform function and the return value of that is pushed instead.
+
+\* Those results are still obtained by using the transform function on `Matcher.MATCH` / `Matcher.MATCH_AHEAD`, so they might be info objects and might not.
 
 ### `Matcher.OR(fnArray)`
 

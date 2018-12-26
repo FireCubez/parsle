@@ -6,7 +6,9 @@
 	"scripts": {
 		"test": "eslint --ignore-path .gitignore ./src",
 		"compile": "echo Compiled `index.js` file: && reqpack index.js ./src | tee ./index.js",
-		"crun": "reqpack index.js ./src ./index.js && node runner.js"
+		"crun": "reqpack index.js ./src ./index.js && node runner.js",
+		"pb": "reqpack index.js ./src ./index.js && git add . && echo Commit and bump version then run `npm run ab`",
+		"ab": "git push && npm publish"
 	},
 	"repository": {
 		"type": "git",
