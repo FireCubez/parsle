@@ -76,7 +76,7 @@ Runs `fn`. If a parse error occurs, set `this.error` to the error, go back to be
 
 ### `Matcher.TRY(fn)`
 
-Returns whether `fn` would throw a parse error when run.
+Returns whether `fn` would succeed (i.e. not throw a parse error when run). If any error occurs, it is also saved in `this.error`.
 
 ### `Matcher.GROUP(fn, transform)`
 
