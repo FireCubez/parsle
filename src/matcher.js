@@ -137,7 +137,7 @@ Req.module("parsle$matcher", $$ =>
 
 	Matcher.prototype.PUSHSTATE = function() {
 		this.states.push({
-			result: this.result,
+			result: Object.assign({},this.result),
 			pos: this.pos,
 			string: this.string
 		});

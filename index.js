@@ -181,7 +181,7 @@ const Req = require("@firecubez/req");module.exports = exports = (function(Req){
 
 	Matcher.prototype.PUSHSTATE = function() {
 		this.states.push({
-			result: this.result,
+			result: Object.assign({},this.result),
 			pos: this.pos,
 			string: this.string
 		});
