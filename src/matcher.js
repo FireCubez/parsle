@@ -188,6 +188,7 @@ Req.module("parsle$matcher", $$ =>
 			if(this.OPTIONAL(fnArray[i])) {
 				return;
 			}
+			this.result.pop(); // Remove extra `null` value
 		}
 		throw new ParseError(
 			'No alternatives can match "' + this.string.slice(0, 5) + '..."',
